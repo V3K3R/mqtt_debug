@@ -1,0 +1,97 @@
+{
+  "users": [
+    {
+      "name": "guest1",
+      "password": "guest1",
+      "tags": "administrator"
+    },
+    {
+      "name": "prometheus-producer",
+      "password": "123",
+      "tags": "producer"
+    },
+    {
+      "name": "prometheus-consumer",
+      "password": "123",
+      "tags": "reader"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    },
+    {
+      "name": "/prometheus-mqtt-readings"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest1",
+      "vhost": "/",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    },
+    {
+      "user": "prometheus-producer",
+      "vhost": "/prometheus-mqtt-readings",
+      "configure": "",
+      "write": ".*",
+      "read": ""
+    },
+    {
+      "user": "prometheus-consumer",
+      "vhost": "/prometheus-mqtt-readings",
+      "configure": ".*",
+      "write": "",
+      "read": ".*"
+    }
+  ],
+  "parameters": [],
+  "policies": [],
+  "queues": [
+    {
+      "name": "payload-logbox-readings",
+      "vhost": "/prometheus-mqtt-readings",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": { "x-queue-mode": "lazy" }
+    },
+    {
+      "name": "payload-logbox-errors",
+      "vhost": "/prometheus-mqtt-readings",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": { "x-queue-mode": "lazy" }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "prometheus-mqtt",
+      "vhost": "/prometheus-mqtt-readings",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "prometheus-mqtt",
+      "vhost": "/prometheus-mqtt-readings",
+      "destination": "payload-logbox-readings",
+      "destination_type": "queue",
+      "routing_key": "payload.logbox.readings",
+      "arguments": {}
+    },
+    {
+      "source": "prometheus-mqtt",
+      "vhost": "/prometheus-mqtt-readings",
+      "destination": "payload-logbox-errors",
+      "destination_type": "queue",
+      "routing_key": "payload.logbox.errors",
+      "arguments": {}
+    }
+  ]
+}
