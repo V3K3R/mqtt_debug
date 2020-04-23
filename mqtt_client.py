@@ -23,7 +23,11 @@ class MqttClient:
         self.topic = config.topic
         self._msg_count = 0
 
+        def on_log(self, obj, level, string) -> None:
+            print(string)
+
         self._client = mqtt.Client(config.client_name)
+        self._client.on_log = on_log
 
     def _connect(self) -> None:
         self._client.username_pw_set(username=self.mqtt_user, password=self.mqtt_psw)
@@ -58,11 +62,7 @@ class MqttClient:
         start_time = time.time()
         try:
 
-            if msg_info.wait_for_publish():
-                #self._msg_count += 1
-                return
-            else:
-                raise Exception()
+            msg_info.wait_for_publish()
         except Exception:
             print(f"Could Not publish{payload} to Mqtt! Timed out in {self.mqtt_timeout}s")
 
@@ -90,11 +90,12 @@ if __name__ == "__main__":
     # client_4 = MqttClient(config=MqttConfig(client_name='Thanos_4'))
     # client_5 = MqttClient(config=MqttConfig(client_name='Thanos_5'))
 
-    th1 = Thread(target=client_1.run, args=[1000, ])
-    th2 = Thread(target=client_2.run_synchrone, args=[1000, ])
+    th1 = Thread(target=client_1.run, args=[10, ])
+    th2 = Thread(target=client_2.run_synchrone, args=[100, "1"])
     th1.start()
     th2.start()
-    runing_threads = [th1, th2]
+    runing_threads = [th1,
+                      th2]
     for t in runing_threads:
 
         t.join()
