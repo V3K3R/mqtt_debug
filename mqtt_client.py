@@ -85,17 +85,21 @@ class MqttClient:
 
 if __name__ == "__main__":
     client_1 = MqttClient(config=MqttConfig())
-    client_2 = MqttClient(config=MqttConfig(client_name='Thanos_2', qos=1))
-    # client_3 = MqttClient(config=MqttConfig(client_name='Thanos_3'))
-    # client_4 = MqttClient(config=MqttConfig(client_name='Thanos_4'))
-    # client_5 = MqttClient(config=MqttConfig(client_name='Thanos_5'))
+    client_2 = MqttClient(config=MqttConfig(client_name='Thanos_2'))
+    client_3 = MqttClient(config=MqttConfig(client_name='Thanos_3'))
 
-    th1 = Thread(target=client_1.run, args=[10, ])
-    th2 = Thread(target=client_2.run_synchrone, args=[100, "1"])
+    th1 = Thread(target=client_1.run, args=[1000, ])
+    th2 = Thread(target=client_2.run, args=[2000, "2", 1])
+    th3 = Thread(target=client_3.run_synchrone, args=[500, "3", 2])
+
     th1.start()
     th2.start()
-    runing_threads = [th1,
-                      th2]
-    for t in runing_threads:
+    th3.start()
 
+    runing_threads = [th1,
+                      th2,
+                      th3,
+                      ]
+
+    for t in runing_threads:
         t.join()
